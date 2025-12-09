@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seed Demo Data - Pulsar</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 20px;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        .container {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #818cf8;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .danger {
+            background: #dc2626;
+        }
+        .danger:hover {
+            background: #b91c1c;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .info {
+            background: #334155;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.success-msg {
+            background: #065f46;
+            border: 1px solid #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Pulsar Demo Data Manager</h1>
+        
+        <div class="info">
+            <strong>ℹ️ Demo Data Includes:</strong>
+            <ul style="margin: 10px 0;">
+                <li>3 Teams (Engineering, Product, Sales)</li>
+                <li>10 Team Members with roles</li>
+                <li>14 Recent Check-ins</li>
+                <li>10 Kudos messages</li>
+                <li>7 Action Items</li>
+                <li>Achievement Badges</li>
+                <li>Notifications</li>
+            </ul>
+        </div>
+
+        <button class="success" onclick="seedDemo()">
+            🌱 Load Demo Data
+        </button>
+        
+        <button class="danger" onclick="clearAll()">
+            🗑️ Clear All Data
+        </button>
+
+        <button onclick="window.location.href='http://localhost:5173'">
+            ← Back to App
+        </button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function seedDemo() {
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.textContent = \`
+                import { seedDemoData } from './src/lib/demoData.ts';
+                localStorage.clear();
+                seedDemoData();
+                document.getElementById('result').className = 'result success-msg show';
+                document.getElementById('result').innerHTML = '✅ Demo data loaded successfully! <br><br><strong>Ready to explore:</strong><br>• 3 teams with realistic data<br>• 10 members with roles<br>• 14 check-ins<br>• 10 kudos<br>• 7 action items<br><br>Refresh the app to see changes.';
+            \`;
+            document.body.appendChild(script);
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear ALL data? This cannot be undone.')) {
+                localStorage.clear();
+                document.getElementById('result').className = 'result success-msg show';
+                document.getElementById('result').innerHTML = '✅ All data cleared successfully!';
+            }
+        }
+    </script>
+</body>
+</html>
