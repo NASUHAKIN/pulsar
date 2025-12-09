@@ -1,4 +1,4 @@
-import type { Team, Member, MemberPreferences, Sector } from './storage'
+import type { Team, Member, MemberPreferences } from './storage'
 
 // Team Profile Management
 export function updateTeam(teamId: string, updates: Partial<Team>): Team | null {
