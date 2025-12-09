@@ -15,7 +15,7 @@ export function EnhancedKudosBoard({ teamId }: EnhancedKudosBoardProps) {
     const [view, setView] = useState<'kudos' | 'badges' | 'mvp'>('kudos')
     const [kudos, setKudos] = useState<any[]>([])
     const [members, setMembers] = useState<any[]>([])
-    const [memberBadges, setMemberBadges] = useState<Map<string, Badge[]>>(new Map())
+    // const [memberBadges, setMemberBadges] = useState<Map<string, Badge[]>>(new Map())
     const [kudosLeaderboard, setKudosLeaderboard] = useState<any[]>([])
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export function EnhancedKudosBoard({ teamId }: EnhancedKudosBoardProps) {
                 .filter(b => b !== undefined) as Badge[]
             badgeMap.set(member.id, badges)
         })
-        setMemberBadges(badgeMap)
+        // Badge map created but not stored in state
 
         // Calculate kudos leaderboard
         const kudosCount = new Map<string, number>()

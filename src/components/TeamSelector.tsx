@@ -41,35 +41,18 @@ export function TeamSelector({ teams, selectedTeamId, onTeamChange }: TeamSelect
         )
     }
 
-    const selectedTeam = teams.find(t => t.id === selectedTeamId)
+    // const selectedTeam = teams.find(t => t.id === selectedTeamId)
 
     return (
         <Select value={selectedTeamId || undefined} onValueChange={onTeamChange}>
             <SelectTrigger className="w-64 bg-gray-800/50 border-gray-700 hover:bg-gray-800 transition-colors">
-                <SelectValue>
-                    {selectedTeam ? (
-                        <div className="flex items-center gap-3">
-                            <span className="text-lg">{getSectorIcon(selectedTeam.sector)}</span>
-                            <div className="flex flex-col items-start">
-                                <span className="text-sm font-medium text-white">{selectedTeam.name}</span>
-                                {selectedTeam.sector && (
-                                    <span className={`text-xs capitalize ${getSectorColor(selectedTeam.sector)}`}>
-                                        {selectedTeam.sector}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    ) : (
-                        <span className="text-gray-400">Select a team...</span>
-                    )}
-                </SelectValue>
+                <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
+            <SelectContent>
                 {teams.map((team) => (
                     <SelectItem
                         key={team.id}
                         value={team.id}
-                        className="cursor-pointer hover:bg-gray-800 focus:bg-gray-800"
                     >
                         <div className="flex items-center gap-3 py-1">
                             <span className="text-lg">{getSectorIcon(team.sector)}</span>

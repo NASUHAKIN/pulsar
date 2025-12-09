@@ -262,7 +262,7 @@ export default function TeamProfile() {
                                             <p className="text-xs text-muted-foreground">{member.email}</p>
                                         </div>
                                         {member.role === 'leader' && (
-                                            <Crown className="h-4 w-4 text-yellow-400" title="Leader" />
+                                            <Crown className="h-4 w-4 text-yellow-400" />
                                         )}
                                     </div>
                                     {canEdit && (

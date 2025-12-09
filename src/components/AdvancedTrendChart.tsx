@@ -188,14 +188,14 @@ export function AdvancedTrendChart({ teamId }: AdvancedTrendChartProps) {
                     <div className="text-center">
                         <p className="text-xs text-gray-400">Average</p>
                         <p className="text-lg font-bold text-white">
-                            {Math.round(trendData.reduce((sum, d) => sum + d[metricConfig.dataKey as keyof TrendDataPoint], 0) / trendData.length) || 0}
+                            {Math.round(trendData.reduce((sum, d) => sum + Number(d[metricConfig.dataKey as keyof TrendDataPoint] || 0), 0) / trendData.length) || 0}
                         </p>
                     </div>
                     <div className="text-center">
                         <p className="text-xs text-gray-400">Trend</p>
                         <p className={`text-lg font-bold ${trendData.length > 1 && trendData[trendData.length - 1]?.[metricConfig.dataKey as keyof TrendDataPoint] > trendData[trendData.length - 2]?.[metricConfig.dataKey as keyof TrendDataPoint]
-                                ? 'text-green-400'
-                                : 'text-red-400'
+                            ? 'text-green-400'
+                            : 'text-red-400'
                             }`}>
                             {trendData.length > 1 && trendData[trendData.length - 1]?.[metricConfig.dataKey as keyof TrendDataPoint] > trendData[trendData.length - 2]?.[metricConfig.dataKey as keyof TrendDataPoint]
                                 ? '↗'

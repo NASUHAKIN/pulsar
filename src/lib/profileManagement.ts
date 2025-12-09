@@ -1,4 +1,3 @@
-// Profile Management Functions
 import type { Team, Member, MemberPreferences, Sector } from './storage'
 
 // Team Profile Management

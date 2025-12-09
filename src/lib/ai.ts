@@ -14,7 +14,10 @@ export interface MemberHighlight {
     highlights: string[];
 }
 
-export function generateTeamSummary(checkIns: CheckIn[], _members?: Member): AISummaryType {
+export async function generateTeamSummary(
+    checkIns: CheckIn[],
+    _members: Member[]
+): Promise<AISummaryType> {
     if (checkIns.length === 0) {
         return {
             summary: "No check-ins available for this period.",
