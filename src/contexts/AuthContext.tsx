@@ -7,7 +7,7 @@ interface AuthContextType {
     isLoading: boolean
     isAuthenticated: boolean
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-    signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
+    signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string; user?: User }>
     logout: () => void
     refreshUser: () => void
 }

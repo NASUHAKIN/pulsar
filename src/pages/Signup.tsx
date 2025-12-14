@@ -31,9 +31,21 @@ export default function Signup() {
 
         setIsLoading(false)
 
-        if (result.success) {
+        if (result.success && result.user) {
             toast.success("Account created successfully!")
-            navigate("/onboarding")
+
+            // Check if user has any teams
+            const { getTeams } = await import('../lib/storage')
+            const allTeams = getTeams()
+            const userTeams = allTeams.filter(t => t.managerId === result.user!.id)
+
+            if (userTeams.length > 0) {
+                // User has teams, go to dashboard
+                navigate("/dashboard")
+            } else {
+                // New user, start onboarding
+                navigate("/onboarding")
+            }
         } else {
             toast.error(result.error || "Sign up failed")
         }
