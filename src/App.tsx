@@ -11,6 +11,8 @@ import Onboarding from "./pages/Onboarding"
 import Settings from "./pages/Settings"
 import TeamProfile from "./pages/TeamProfile"
 import NotFound from "./pages/NotFound"
+import Terms from "./pages/Terms"
+import Privacy from "./pages/Privacy"
 import { Toaster } from "sonner"
 import { useEffect } from "react"
 import { seedData } from "./lib/storage"
@@ -86,6 +88,10 @@ function AppRoutes() {
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/team/:teamId/profile" element={<ProtectedRoute><TeamProfile /></ProtectedRoute>} />
+
+            {/* Legal pages */}
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
 
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
