@@ -158,12 +158,12 @@ export function saveCheckIn(checkin: CheckIn): void {
     localStorage.setItem(STORAGE_KEYS.CHECKINS, JSON.stringify(checkins))
 }
 
-export function addTeam(name: string, sector: Sector = 'general'): Team {
+export function addTeam(name: string, sector: Sector = 'general', userId?: string): Team {
     const teams = getTeams()
     const newTeam: Team = {
         id: crypto.randomUUID(),
         name,
-        managerId: 'temp-manager',
+        managerId: userId || 'temp-manager',
         sector,
         createdAt: new Date().toISOString(),
         isPublic: true,

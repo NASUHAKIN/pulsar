@@ -1,31 +1,49 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "../components/ui/card"
 import { Logo } from "../components/Logo"
-import { seedData, STORAGE_KEYS } from "../lib/storage"
+import { useAuth } from "../contexts/AuthContext"
+import { toast } from "sonner"
 
 export default function Login() {
     const navigate = useNavigate()
+    const { login, isAuthenticated, isLoading: authLoading } = useAuth()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
 
-    const handleLogin = (e: React.FormEvent) => {
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (!authLoading && isAuthenticated) {
+            navigate("/dashboard")
+        }
+    }, [isAuthenticated, authLoading, navigate])
+
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
 
-        // Simulating auth delay
-        setTimeout(() => {
-            // Ensure demo data exists
-            if (!localStorage.getItem(STORAGE_KEYS.TEAMS)) {
-                seedData()
-            }
-            setIsLoading(false)
+        const result = await login(email, password)
+
+        setIsLoading(false)
+
+        if (result.success) {
+            toast.success("Login successful!")
             navigate("/dashboard")
-        }, 1500)
+        } else {
+            toast.error(result.error || "Login failed")
+        }
+    }
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="animate-pulse text-muted-foreground">Loading...</div>
+            </div>
+        )
     }
 
     return (
@@ -38,9 +56,9 @@ export default function Login() {
 
             <Card className="w-full max-w-md bg-card border-border animate-in fade-in zoom-in duration-500">
                 <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center text-foreground">Welcome back</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-center text-foreground">Welcome Back</CardTitle>
                     <CardDescription className="text-center text-muted-foreground">
-                        Enter your credentials to access your workspace
+                        Sign in to your account
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -50,7 +68,7 @@ export default function Login() {
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="name@company.com"
+                                placeholder="john@company.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -71,8 +89,12 @@ export default function Login() {
                                 className="bg-background border-input focus-visible:ring-primary"
                             />
                         </div>
-                        <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-                            {isLoading ? "Signing in..." : "Sign in"}
+                        <Button
+                            type="submit"
+                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Signing in..." : "Sign In"}
                         </Button>
                     </form>
                 </CardContent>
@@ -80,7 +102,7 @@ export default function Login() {
                     <div className="text-sm text-muted-foreground">
                         Don't have an account?{" "}
                         <Link to="/signup" className="text-primary hover:text-primary/80 font-medium">
-                            Sign up
+                            Sign Up
                         </Link>
                     </div>
                 </CardFooter>

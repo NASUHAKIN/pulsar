@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../co
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Logo } from '../components/Logo'
-import { addTeam, addMember } from '../lib/storage'
+import { addTeam, addMember, getTeams } from '../lib/storage'
+import { useAuth } from '../contexts/AuthContext'
 import { Check, Users, Briefcase, Code, ShoppingCart, Sparkles, Rocket, Zap, TrendingUp, ChevronRight, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -18,25 +19,45 @@ interface TeamMember {
 
 export default function Onboarding() {
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [step, setStep] = useState(0) // Start at welcome screen
     const [teamName, setTeamName] = useState('')
     const [sector, setSector] = useState<Sector>('general')
     const [members, setMembers] = useState<TeamMember[]>([{ name: '', email: '' }])
     const [errors, setErrors] = useState<{ teamName?: string; members?: string[] }>({})
+    const [isLoading, setIsLoading] = useState(true)
 
-    // Load saved progress (but never restore step 0 - always show welcome)
+    // Check if logged-in user has existing teams - if so, redirect to Dashboard
+    useEffect(() => {
+        // If not logged in, always show welcome page
+        if (!user) {
+            setIsLoading(false)
+            return
+        }
+
+        // User is logged in, check for their teams
+        const teams = getTeams()
+        const userTeams = teams.filter(t => t.managerId === user.id)
+
+        if (userTeams.length > 0) {
+            // User has created their own team, redirect to dashboard
+            navigate('/dashboard')
+        } else {
+            setIsLoading(false)
+        }
+    }, [navigate, user])
+
+    // Load saved data (but NEVER restore step - always start at welcome screen)
     useEffect(() => {
         const saved = localStorage.getItem('onboarding_progress')
         if (saved) {
             try {
                 const data = JSON.parse(saved)
+                // Only restore data, NOT the step - user must always start from welcome
                 if (data.teamName) setTeamName(data.teamName)
                 if (data.sector) setSector(data.sector)
                 if (data.members) setMembers(data.members)
-                // Only restore step if it's > 0 (never skip welcome screen)
-                if (data.step && data.step > 0) {
-                    setStep(data.step)
-                }
+                // Don't restore step - always start at 0 (welcome screen)
             } catch (e) {
                 console.error('Failed to load progress')
             }
@@ -165,8 +186,8 @@ export default function Onboarding() {
     }
 
     const handleComplete = () => {
-        // Create team
-        const team = addTeam(teamName, sector)
+        // Create team linked to current user
+        const team = addTeam(teamName, sector, user?.id)
 
         // Add members
         const validMembers = members.filter(m => m.name.trim() && m.email.trim())
@@ -183,163 +204,97 @@ export default function Onboarding() {
 
     const progress = step === 0 ? 0 : step === 4 ? 100 : ((step) / 3) * 100
 
-    // Welcome Screen
+    // Show loading while checking for existing teams
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <Logo size="lg" />
+                    <div className="animate-pulse text-gray-400">Loading...</div>
+                </div>
+            </div>
+        )
+    }
+
+    // Welcome Screen - Clean & Minimal
     if (step === 0) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white overflow-y-auto">
-                <div className="max-w-6xl mx-auto px-6 py-12">
+            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex flex-col">
+                <div className="flex-1 max-w-3xl mx-auto px-6 py-16 flex flex-col justify-center">
                     {/* Hero Section */}
-                    <div className="text-center space-y-6 mb-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                    <div className="text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
                         <Logo size="lg" />
 
                         <div className="space-y-4">
-                            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                                AI-Powered Team Check-ins
+                            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                Team Check-ins Made Simple
                             </h1>
-                            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-                                Transform team communication with intelligent check-ins, real-time analytics, and automated insights
+                            <p className="text-lg text-gray-400 max-w-xl mx-auto">
+                                Quick daily updates, AI-powered insights, and real-time analytics for your team
                             </p>
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-4 pt-4">
-                            <div className="flex items-center gap-2 text-gray-400">
-                                <Check className="h-5 w-5 text-green-400" />
-                                <span>2-minute setup</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-gray-400">
-                                <Check className="h-5 w-5 text-green-400" />
-                                <span>No credit card</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-gray-400">
-                                <Check className="h-5 w-5 text-green-400" />
-                                <span>Free forever</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Features Grid */}
-                    <div className="grid md:grid-cols-3 gap-6 mb-16">
-                        <div className="p-8 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 backdrop-blur hover:scale-105 transition-transform">
-                            <div className="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4">
-                                <Zap className="h-8 w-8 text-blue-400" />
-                            </div>
-                            <h3 className="font-semibold text-xl mb-3">Lightning Fast</h3>
-                            <p className="text-gray-400 text-sm leading-relaxed">
-                                Daily or weekly check-ins take less than 2 minutes. Keep your team aligned without the overhead of long meetings.
-                            </p>
+                        {/* Simple Feature Pills */}
+                        <div className="flex flex-wrap justify-center gap-3 pt-2">
+                            <span className="px-4 py-2 bg-gray-800/50 rounded-full text-sm text-gray-300 border border-gray-700">
+                                ⚡ 2-minute check-ins
+                            </span>
+                            <span className="px-4 py-2 bg-gray-800/50 rounded-full text-sm text-gray-300 border border-gray-700">
+                                🤖 AI Summaries
+                            </span>
+                            <span className="px-4 py-2 bg-gray-800/50 rounded-full text-sm text-gray-300 border border-gray-700">
+                                📊 Analytics
+                            </span>
                         </div>
 
-                        <div className="p-8 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/20 backdrop-blur hover:scale-105 transition-transform">
-                            <div className="w-14 h-14 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
-                                <Sparkles className="h-8 w-8 text-purple-400" />
-                            </div>
-                            <h3 className="font-semibold text-xl mb-3">AI-Powered Insights</h3>
-                            <p className="text-gray-400 text-sm leading-relaxed">
-                                Get instant team summaries, identify risks and blockers automatically. AI analyzes patterns you might miss.
-                            </p>
+                        {/* Main CTA */}
+                        <div className="pt-6">
+                            <Button
+                                onClick={() => {
+                                    if (!user) {
+                                        navigate('/signup')
+                                    } else {
+                                        setStep(1)
+                                    }
+                                }}
+                                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 px-10 py-6 text-lg group"
+                                size="lg"
+                            >
+                                Get Started Free <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            </Button>
                         </div>
 
-                        <div className="p-8 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 backdrop-blur hover:scale-105 transition-transform">
-                            <div className="w-14 h-14 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
-                                <TrendingUp className="h-8 w-8 text-green-400" />
-                            </div>
-                            <h3 className="font-semibold text-xl mb-3">Real-Time Analytics</h3>
-                            <p className="text-gray-400 text-sm leading-relaxed">
-                                Track submit rates, identify delays, monitor team mood. Make data-driven decisions with beautiful dashboards.
-                            </p>
-                        </div>
-                    </div>
+                        {/* Login Options */}
+                        <div className="pt-12 border-t border-gray-800/50 mt-12">
+                            <p className="text-gray-500 text-sm mb-6">Already have an account?</p>
+                            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="p-4 rounded-xl border border-gray-700/50 bg-gray-800/30 hover:bg-gray-800/60 hover:border-indigo-500/50 transition-all text-center group"
+                                >
+                                    <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:bg-indigo-500/30">
+                                        <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                    </div>
+                                    <p className="font-medium text-white text-sm">Manager</p>
+                                    <p className="text-xs text-gray-500">Manage teams</p>
+                                </button>
 
-                    {/* Additional Features */}
-                    <div className="grid md:grid-cols-2 gap-8 mb-16">
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-bold mb-6">Everything You Need</h3>
-                            <div className="flex items-start gap-3">
-                                <Check className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold mb-1">7 Check-in Templates</p>
-                                    <p className="text-sm text-gray-400">Engineering, Product, Sales, and more - pre-built for your team type</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Check className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold mb-1">Gamification & Badges</p>
-                                    <p className="text-sm text-gray-400">Keep teams motivated with kudos, achievements, and friendly competition</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Check className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold mb-1">Smart Notifications</p>
-                                    <p className="text-sm text-gray-400">Never miss a check-in with intelligent reminders and alerts</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Check className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold mb-1">Export & Reports</p>
-                                    <p className="text-sm text-gray-400">PDF and CSV exports for sharing with stakeholders</p>
-                                </div>
+                                <button
+                                    onClick={() => navigate('/member-login')}
+                                    className="p-4 rounded-xl border border-gray-700/50 bg-gray-800/30 hover:bg-gray-800/60 hover:border-green-500/50 transition-all text-center group"
+                                >
+                                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:bg-green-500/30">
+                                        <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <p className="font-medium text-white text-sm">Member</p>
+                                    <p className="text-xs text-gray-500">Submit check-ins</p>
+                                </button>
                             </div>
                         </div>
-
-                        <div className="p-8 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-2xl border border-indigo-500/20">
-                            <h3 className="text-2xl font-bold mb-6">Perfect For</h3>
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                        <Code className="h-5 w-5 text-blue-400" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Engineering Teams</p>
-                                        <p className="text-xs text-gray-400">Sprint updates, blockers, technical debt</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                                        <Sparkles className="h-5 w-5 text-purple-400" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Product Teams</p>
-                                        <p className="text-xs text-gray-400">Feature progress, user feedback, roadmap</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                        <ShoppingCart className="h-5 w-5 text-green-400" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Sales Teams</p>
-                                        <p className="text-xs text-gray-400">Pipeline updates, deals won, challenges</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                                        <Users className="h-5 w-5 text-orange-400" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Any Team</p>
-                                        <p className="text-xs text-gray-400">Flexible templates for any workflow</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* CTA */}
-                    <div className="text-center space-y-6">
-                        <Button
-                            onClick={() => setStep(1)}
-                            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 px-12 py-6 text-lg group"
-                            size="lg"
-                        >
-                            Start Your Free Team <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-
-                        <p className="text-gray-500 text-sm">
-                            Join thousands of teams already using Pulsar
-                        </p>
                     </div>
                 </div>
             </div>
@@ -348,7 +303,7 @@ export default function Onboarding() {
 
     // Success Screen
     if (step === 4) {
-        setTimeout(() => navigate('/dashboard'), 5000)
+        // No auto-redirect - user must click button
 
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex flex-col items-center justify-center p-6">
@@ -399,10 +354,6 @@ export default function Onboarding() {
                     >
                         Go to Dashboard <Rocket className="ml-2 h-5 w-5" />
                     </Button>
-
-                    <p className="text-gray-500 text-sm">
-                        Redirecting automatically in 5 seconds...
-                    </p>
                 </div>
             </div>
         )
@@ -588,7 +539,6 @@ export default function Onboarding() {
                         <Button
                             variant="ghost"
                             onClick={handleBack}
-                            disabled={step === 1}
                             className="text-gray-400 hover:text-white"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
