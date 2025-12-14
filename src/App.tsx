@@ -69,9 +69,8 @@ function AppRoutes() {
 
     return (
         <Routes>
-            {/* Welcome page - always public */}
-            <Route path="/" element={<Onboarding />} />
-            <Route path="/landing" element={<Landing />} />
+            {/* Landing page - always public */}
+            <Route path="/" element={<Landing />} />
 
             {/* Auth pages - redirect to dashboard if already logged in */}
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />

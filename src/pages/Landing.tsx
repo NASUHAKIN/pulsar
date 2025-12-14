@@ -26,7 +26,7 @@ export default function Landing() {
                     <Button variant="ghost" className="text-slate-400 hover:text-white" onClick={() => navigate('/login')}>
                         Log In
                     </Button>
-                    <Button onClick={() => navigate('/')} className="bg-indigo-600 hover:bg-indigo-500">
+                    <Button onClick={() => navigate('/signup')} className="bg-indigo-600 hover:bg-indigo-500">
                         Get Started
                     </Button>
                 </div>
@@ -50,7 +50,7 @@ export default function Landing() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                        <Button size="lg" className="h-14 px-8 text-lg bg-indigo-600 hover:bg-indigo-500 shadow-xl shadow-indigo-500/20" onClick={() => navigate('/')}>
+                        <Button size="lg" className="h-14 px-8 text-lg bg-indigo-600 hover:bg-indigo-500 shadow-xl shadow-indigo-500/20" onClick={() => navigate('/signup')}>
                             Start Free — No Credit Card
                             <ArrowRight className="h-5 w-5 ml-2" />
                         </Button>
@@ -183,7 +183,7 @@ export default function Landing() {
                                 <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-green-500" /> Basic analytics</li>
                                 <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-green-500" /> AI summaries</li>
                             </ul>
-                            <Button className="w-full" variant="outline" onClick={() => navigate('/')}>Get Started Free</Button>
+                            <Button className="w-full" variant="outline" onClick={() => navigate('/signup')}>Get Started Free</Button>
                         </CardContent>
                     </Card>
 
@@ -203,7 +203,7 @@ export default function Landing() {
                                 <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-green-500" /> Export to PDF/CSV</li>
                                 <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-green-500" /> Email notifications</li>
                             </ul>
-                            <Button className="w-full bg-indigo-600 hover:bg-indigo-500" onClick={() => navigate('/')}>Start 14-day trial</Button>
+                            <Button className="w-full bg-indigo-600 hover:bg-indigo-500" onClick={() => navigate('/signup')}>Start 14-day trial</Button>
                         </CardContent>
                     </Card>
 
@@ -231,7 +231,7 @@ export default function Landing() {
                 <div className="max-w-3xl mx-auto text-center bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 rounded-3xl p-12">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to replace your status meetings?</h2>
                     <p className="text-slate-400 mb-8">Join thousands of teams using Pulsar for async check-ins.</p>
-                    <Button size="lg" className="h-14 px-8 text-lg bg-white text-gray-900 hover:bg-slate-100" onClick={() => navigate('/')}>
+                    <Button size="lg" className="h-14 px-8 text-lg bg-white text-gray-900 hover:bg-slate-100" onClick={() => navigate('/signup')}>
                         Get Started Free
                         <ChevronRight className="h-5 w-5 ml-2" />
                     </Button>
