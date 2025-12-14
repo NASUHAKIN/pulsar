@@ -7,7 +7,7 @@ import { Label } from '../components/ui/label'
 import { Logo } from '../components/Logo'
 import { addTeam, addMember, getTeams } from '../lib/storage'
 import { useAuth } from '../contexts/AuthContext'
-import { Check, Users, Briefcase, Code, ShoppingCart, Sparkles, Rocket, Zap, TrendingUp, ChevronRight, ArrowLeft } from 'lucide-react'
+import { Check, Users, Briefcase, Code, ShoppingCart, Sparkles, Rocket, ChevronRight, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 
 type Sector = 'engineering' | 'product' | 'sales' | 'general'

@@ -5,6 +5,7 @@ export interface Member {
     teamId: string
     role: 'leader' | 'member'
     createdAt: string
+    password?: string // For member authentication
     // Profile fields
     photoUrl?: string
     bio?: string

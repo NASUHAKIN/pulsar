@@ -74,9 +74,9 @@ export function ExportDialog({ teamId }: ExportDialogProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="content-type">Content</Label>
+                        <Label>Content</Label>
                         <Select value={contentType} onValueChange={(value) => setContentType(value as ExportOptions['content'])}>
-                            <SelectTrigger id="content-type">
+                            <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

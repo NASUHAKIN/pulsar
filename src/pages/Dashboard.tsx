@@ -17,7 +17,7 @@ import {
     Plus, Bot, Users, TrendingUp, AlertTriangle, MessageSquare,
     Settings as SettingsIcon, LogOut, ChevronDown, Calendar,
     CheckCircle2, Clock, Sparkles, Moon, Sun, Link2, UserPlus,
-    Download, Bell, Heart, ListTodo, Copy, Mail, ExternalLink
+    Heart, ListTodo, Copy, Mail, ExternalLink
 } from "lucide-react"
 import { toast } from "sonner"
 import { Input } from "../components/ui/input"
@@ -159,8 +159,8 @@ export default function Dashboard() {
                                                 key={team.id}
                                                 onClick={() => handleTeamSelect(team)}
                                                 className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${team.id === selectedTeamId
-                                                        ? 'bg-primary/10 text-primary'
-                                                        : 'hover:bg-accent'
+                                                    ? 'bg-primary/10 text-primary'
+                                                    : 'hover:bg-accent'
                                                     }`}
                                             >
                                                 <div className="font-medium">{team.name}</div>
@@ -432,8 +432,8 @@ export default function Dashboard() {
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id as any)}
                                         className={`px-4 py-3 flex items-center gap-2 border-b-2 transition-colors ${activeTab === tab.id
-                                                ? 'border-primary text-primary'
-                                                : 'border-transparent text-muted-foreground hover:text-foreground'
+                                            ? 'border-primary text-primary'
+                                            : 'border-transparent text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
                                         <tab.icon className="h-4 w-4" />
